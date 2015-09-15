@@ -3,6 +3,7 @@ package ru.vladimir;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.XMLOutputter;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -23,20 +24,23 @@ public class Main {
                 new Thread() {
                     public void run() {
                         try {
+                            System.out.println(System.currentTimeMillis());
                             BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
+                            SAXBuilder builder = new SAXBuilder();
                             StringBuilder sb = new StringBuilder();
                             String inline = "";
 
                             while ((inline = input.readLine()) != null) {
                                 sb.append(inline);
+                                if (inline.equals("</WEATHERDATA>")) {
+//                                    System.out.println(System.currentTimeMillis());
+                                    Document doc = (Document) builder.build(new ByteArrayInputStream(sb.toString().getBytes()));
+                                    System.out.println(new XMLOutputter().outputString(doc));
+                                    sb.setLength(0);
+                                }
                             }
 
-                            SAXBuilder builder = new SAXBuilder();
-
-                            Document doc = builder.build(new ByteArrayInputStream(sb.toString().getBytes()));
-
-                            System.out.println(doc.toString());
                         } catch (IOException ioEx) {
                             System.out.println(ioEx.getMessage());
                         } catch (JDOMException e) {
