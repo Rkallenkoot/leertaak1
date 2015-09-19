@@ -1,11 +1,13 @@
 package ru.vladimir.server;
 
+import com.mysql.jdbc.Statement;
+import org.apache.commons.io.IOUtils;
 import ru.vladimir.model.Measurement;
 import ru.vladimir.worker.MessageQueue;
 
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
@@ -42,42 +44,83 @@ public class QueueHandler implements Runnable {
     public void run() {
         // Wat moet de queue handler doen??
         while (true) {
-            if (queue.size() >= 8000) {
+            if (queue.size() >= 1) {
 
-                PreparedStatement stmt = null;
+                Statement ldstmt = null;
+                String statementText = "LOAD DATA LOCAL INFILE 'file.txt'" +
+                        "INTO TABLE measurements " +
+                        "(stn, date, time, temp, dewp, stp, slp, visib, wdsp, prcp, sndp, frshtt, cldc, wnddir);";
                 try {
-                    stmt = connection.prepareStatement(SQL);
-                    connection.setAutoCommit(false);
+                    ldstmt = (com.mysql.jdbc.Statement) connection.createStatement();
+
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
                 int size = queue.size();
+                StringBuilder builder = new StringBuilder();
                 for (int i = 0; i < size; i++) {
                     Measurement m = queue.receive();
-                    try {
-                        stmt.setInt(1, m.getStn());
-                        stmt.setDate(2, m.getDate());
-                        stmt.setTime(3, m.getTime());
-                        stmt.setFloat(4, m.getTemp());
-                        stmt.setFloat(5, m.getDewp());
-                        stmt.setFloat(6, m.getStp());
-                        stmt.setFloat(7, m.getSlp());
-                        stmt.setFloat(8, m.getVisib());
-                        stmt.setFloat(9, m.getWdsp());
-                        stmt.setFloat(10, m.getPrcp());
-                        stmt.setFloat(11, m.getSndp());
-                        stmt.setByte(12, m.getFrshtt());
-                        stmt.setFloat(13, m.getCldc());
-                        stmt.setShort(14, m.getWnddir());
-                        stmt.addBatch();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
+                    builder.append("stn");
+                    builder.append('\t');
+                    builder.append(m.getStn());
+                    builder.append('\n');
+
+                    builder.append("date\t");
+                    builder.append(m.getDate());
+                    builder.append('\n');
+
+                    builder.append("time\t");
+                    builder.append(m.getTime());
+                    builder.append('\n');
+
+                    builder.append("temp\t");
+                    builder.append(m.getTemp());
+                    builder.append('\n');
+
+                    builder.append("dewp\t");
+                    builder.append(m.getDewp());
+                    builder.append('\n');
+
+                    builder.append("stp\t");
+                    builder.append(m.getStp());
+                    builder.append('\n');
+
+                    builder.append("slp\t");
+                    builder.append(m.getSlp());
+                    builder.append('\n');
+
+                    builder.append("visib\t");
+                    builder.append(m.getVisib());
+                    builder.append('\n');
+
+                    builder.append("wdsp\t");
+                    builder.append(m.getWdsp());
+                    builder.append('\n');
+
+                    builder.append("prcp\t");
+                    builder.append(m.getPrcp());
+                    builder.append('\n');
+
+                    builder.append("sndp\t");
+                    builder.append(m.getSndp());
+                    builder.append('\n');
+
+                    builder.append("frshtt\t");
+                    builder.append(m.getFrshtt());
+                    builder.append('\n');
+
+                    builder.append("cldc\t");
+                    builder.append(m.getCldc());
+                    builder.append('\n');
+
+                    builder.append("wnddir\t");
+                    builder.append(m.getWnddir());
+                    builder.append('\n');
                 }
+                InputStream is = IOUtils.toInputStream(builder.toString());
+                ldstmt.setLocalInfileInputStream(is);
                 try {
-                    // Save return values in int[] count en commit
-                    int[] count = stmt.executeBatch();
-                    connection.commit();
+                    ldstmt.execute(statementText);
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }

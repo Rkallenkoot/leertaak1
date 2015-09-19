@@ -227,4 +227,5 @@ public class Measurement {
     public void setWnddir(short wnddir) {
         this.wnddir = wnddir;
     }
+
 }
