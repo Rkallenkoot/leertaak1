@@ -44,11 +44,12 @@ public class QueueHandler implements Runnable {
     public void run() {
         // Wat moet de queue handler doen??
         while (true) {
-            if (queue.size() >= 1) {
+            if (queue.size() >= 4000) {
 
                 Statement ldstmt = null;
                 String statementText = "LOAD DATA LOCAL INFILE 'file.txt'" +
                         "INTO TABLE measurements " +
+                        "FIELDS TERMINATED BY \',\'" +
                         "(stn, date, time, temp, dewp, stp, slp, visib, wdsp, prcp, sndp, frshtt, cldc, wnddir);";
                 try {
                     ldstmt = (com.mysql.jdbc.Statement) connection.createStatement();
@@ -60,61 +61,47 @@ public class QueueHandler implements Runnable {
                 StringBuilder builder = new StringBuilder();
                 for (int i = 0; i < size; i++) {
                     Measurement m = queue.receive();
-                    builder.append("stn");
-                    builder.append('\t');
                     builder.append(m.getStn());
-                    builder.append('\n');
+                    builder.append(',');
 
-                    builder.append("date\t");
                     builder.append(m.getDate());
-                    builder.append('\n');
+                    builder.append(',');
 
-                    builder.append("time\t");
                     builder.append(m.getTime());
-                    builder.append('\n');
+                    builder.append(',');
 
-                    builder.append("temp\t");
                     builder.append(m.getTemp());
-                    builder.append('\n');
+                    builder.append(',');
 
-                    builder.append("dewp\t");
                     builder.append(m.getDewp());
-                    builder.append('\n');
+                    builder.append(',');
 
-                    builder.append("stp\t");
                     builder.append(m.getStp());
-                    builder.append('\n');
+                    builder.append(',');
 
-                    builder.append("slp\t");
                     builder.append(m.getSlp());
-                    builder.append('\n');
+                    builder.append(',');
 
-                    builder.append("visib\t");
                     builder.append(m.getVisib());
-                    builder.append('\n');
+                    builder.append(',');
 
-                    builder.append("wdsp\t");
                     builder.append(m.getWdsp());
-                    builder.append('\n');
+                    builder.append(',');
 
-                    builder.append("prcp\t");
                     builder.append(m.getPrcp());
-                    builder.append('\n');
+                    builder.append(',');
 
-                    builder.append("sndp\t");
                     builder.append(m.getSndp());
-                    builder.append('\n');
+                    builder.append(',');
 
-                    builder.append("frshtt\t");
                     builder.append(m.getFrshtt());
-                    builder.append('\n');
+                    builder.append(',');
 
-                    builder.append("cldc\t");
                     builder.append(m.getCldc());
-                    builder.append('\n');
+                    builder.append(',');
 
-                    builder.append("wnddir\t");
                     builder.append(m.getWnddir());
+                    builder.append(',');
                     builder.append('\n');
                 }
                 InputStream is = IOUtils.toInputStream(builder.toString());

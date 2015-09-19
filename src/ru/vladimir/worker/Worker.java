@@ -51,10 +51,6 @@ public class Worker implements Runnable {
                     for (Element e : elements) {
                         queue.send(new Measurement(e));
                     }
-                    // Validaten de QueueHandler laten doen ??
-//                    Validator.validateWeatherData(elements);
-
-                    // push them into the Queue
                     sb.setLength(0);
                 }
             }
