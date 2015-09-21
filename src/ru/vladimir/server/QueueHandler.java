@@ -15,12 +15,9 @@ import java.sql.SQLException;
  */
 public class QueueHandler implements Runnable {
 
-    private final static String url = "jdbc:mysql://192.168.0.39:3306/unwdmi";
+    private final static String url = "jdbc:mysql://based.rkallenkoot.nl:3306/unwdmi";
     private final static String user = "unwdmi";
     private final static String pass = "dUVFLAj97dFeMnZM";
-    private static final String SQL = "INSERT INTO measurements " +
-            "(stn, date, time, temp, dewp, stp, slp, visib, wdsp, prcp, sndp, frshtt, cldc, wnddir) " +
-            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
     private Connection connection;
     private MessageQueue<Measurement> queue;
