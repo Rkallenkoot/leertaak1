@@ -4,9 +4,6 @@ import ru.vladimir.util.Channel;
 
 import java.util.Vector;
 
-/**
- * Created by roelof on 17/09/2015.
- */
 public class MessageQueue<E> implements Channel<E> {
 
     private Vector<E> queue;

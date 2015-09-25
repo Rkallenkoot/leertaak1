@@ -11,9 +11,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-/**
- * Created by roelof on 19/09/2015.
- */
 public class QueueHandler implements Runnable {
 
     private final static String url = "jdbc:mysql://127.0.0.1:3306/unwdmi";
