@@ -2,10 +2,10 @@ package ru.vladimir.model;
 
 import org.jdom2.Element;
 
+import java.sql.Date;
 import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class Measurement {
 
@@ -27,9 +27,9 @@ public class Measurement {
     public Measurement(Element el) {
         setStn(Integer.parseInt(el.getChildText("STN")));
         try {
-            setDate(new SimpleDateFormat("yyyy-MM-dd").parse(el.getChild("DATE").getText()));
             SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
-            long ms = sdf.parse(el.getChild("TIME").getText()).getTime();
+            setDate(Date.valueOf(el.getChildText("DATE")));
+            long ms = sdf.parse(el.getChildText("TIME")).getTime();
             setTime(new Time(ms));
 
         } catch (ParseException e) {
@@ -227,4 +227,5 @@ public class Measurement {
     public void setWnddir(short wnddir) {
         this.wnddir = wnddir;
     }
+
 }
