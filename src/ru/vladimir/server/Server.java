@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
 public class Server {
 
     private static final int port = 6050;
-    private static final int poolSize = 820;
+    private static final int poolSize = 1680;
 
     private ServerSocket serverSocket;
     private ExecutorService pool;

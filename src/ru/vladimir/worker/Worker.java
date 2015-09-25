@@ -28,13 +28,6 @@ public class Worker implements Runnable {
         try {
             BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            // Define a schema factory and a schema
-//            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-//            Schema schema = schemaFactory.newSchema(new File("./resources/weatherdata.dtd"));
-
-            // create an XMLReaderJDOMFactory by passing the schema
-//            XMLReaderJDOMFactory factory = new XMLReaderSchemaFactory(schema);
-            // create a SAXBuilder using the XMLReaderJDOMFactory
             SAXBuilder builder = new SAXBuilder();
             StringBuilder sb = new StringBuilder();
             String inline = "";

@@ -3,6 +3,7 @@ package ru.vladimir.server;
 import com.mysql.jdbc.Statement;
 import org.apache.commons.io.IOUtils;
 import ru.vladimir.model.Measurement;
+import ru.vladimir.validation.Validator;
 import ru.vladimir.worker.MessageQueue;
 
 import java.io.InputStream;
@@ -15,12 +16,13 @@ import java.sql.SQLException;
  */
 public class QueueHandler implements Runnable {
 
-    private final static String url = "jdbc:mysql://based.rkallenkoot.nl:3306/unwdmi";
-    private final static String user = "unwdmi";
-    private final static String pass = "dUVFLAj97dFeMnZM";
+    private final static String url = "jdbc:mysql://127.0.0.1:3306/unwdmi";
+    private final static String user = "root";
+    private final static String pass = "";
 
     private Connection connection;
     private MessageQueue<Measurement> queue;
+    private Validator validator;
 
     /**
      * Initializes the QueueHandler with the given Queue
@@ -29,19 +31,20 @@ public class QueueHandler implements Runnable {
      */
     public QueueHandler(MessageQueue<Measurement> queue) {
         this.queue = queue;
-
+        this.validator = new Validator();
         try {
             connection = DriverManager.getConnection(url, user, pass);
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 
     @Override
     public void run() {
-        // Wat moet de queue handler doen??
         while (true) {
-            if (queue.size() >= 4000) {
+            // TODO: Spinlockish gedrag
+            // wasting CPU
+            if (queue.size() >= 8000) {
 
                 Statement ldstmt = null;
                 String statementText = "LOAD DATA LOCAL INFILE 'file.txt'" +
@@ -57,7 +60,8 @@ public class QueueHandler implements Runnable {
                 int size = queue.size();
                 StringBuilder builder = new StringBuilder();
                 for (int i = 0; i < size; i++) {
-                    Measurement m = queue.receive();
+                    Measurement m = validator.validateMeasurement(queue.receive());
+
                     builder.append(m.getStn());
                     builder.append(',');
 
