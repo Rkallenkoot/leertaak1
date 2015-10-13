@@ -3,6 +3,7 @@ package ru.vladimir.validation;
 import org.jdom2.Element;
 import ru.vladimir.model.Measurement;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -171,6 +172,16 @@ public class Validator {
          * Measurement should contain correct data here
          */
 
+        // Afronden die handel
+        mes.setTemp(this.round(mes.getTemp(), 1));
+        mes.setDewp(this.round(mes.getDewp(), 1));
+        mes.setStp(this.round(mes.getStp(), 1));
+        mes.setSlp(this.round(mes.getSlp(), 1));
+        mes.setVisib(this.round(mes.getVisib(), 1));
+        mes.setWdsp(this.round(mes.getWdsp(), 1));
+        mes.setPrcp(this.round(mes.getPrcp(), 2));
+        mes.setSndp(this.round(mes.getSndp(), 1));
+        mes.setCldc(this.round(mes.getCldc(), 2));
 
         /**
          * Push measurement in the list
@@ -190,5 +201,18 @@ public class Validator {
         measurements.put(mes.getStn(), list);
         // Return the measurement so we can persist correct values to DB
         return mes;
+    }
+
+    /**
+     * Round to certain number of decimals
+     *
+     * @param d
+     * @param decimalPlace
+     * @return
+     */
+    public float round(float d, int decimalPlace) {
+        BigDecimal bd = new BigDecimal(Float.toString(d));
+        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
+        return bd.floatValue();
     }
 }
