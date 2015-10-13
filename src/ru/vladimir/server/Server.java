@@ -1,5 +1,6 @@
 package ru.vladimir.server;
 
+import ru.vladimir.database.DatabaseWriter;
 import ru.vladimir.model.Measurement;
 import ru.vladimir.worker.MessageQueue;
 import ru.vladimir.worker.Worker;
@@ -18,6 +19,7 @@ public class Server {
     private ServerSocket serverSocket;
     private ExecutorService pool;
     private MessageQueue<Measurement> queue;
+    private DatabaseWriter writer;
     private QueueHandler queueHandler;
 
     /**
@@ -28,7 +30,8 @@ public class Server {
             this.serverSocket = new ServerSocket(port);
             pool = Executors.newFixedThreadPool(poolSize);
             queue = new MessageQueue<>();
-            queueHandler = new QueueHandler(queue);
+            writer = new DatabaseWriter("./db");
+            queueHandler = new QueueHandler(queue, writer);
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
@@ -45,7 +48,8 @@ public class Server {
             this.serverSocket = new ServerSocket(port);
             pool = Executors.newFixedThreadPool(poolSize);
             queue = new MessageQueue<>();
-            queueHandler = new QueueHandler(queue);
+            writer = new DatabaseWriter("./db");
+            queueHandler = new QueueHandler(queue, writer);
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }

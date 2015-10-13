@@ -1,59 +1,38 @@
 package ru.vladimir.server;
 
-import com.mysql.jdbc.Statement;
-import org.apache.commons.io.IOUtils;
+import ru.vladimir.database.DatabaseWriter;
 import ru.vladimir.model.Measurement;
 import ru.vladimir.validation.Validator;
 import ru.vladimir.worker.MessageQueue;
 
-import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class QueueHandler implements Runnable {
 
-    private final static String url = "jdbc:mysql://127.0.0.1:3306/unwdmi";
-    private final static String user = "root";
-    private final static String pass = "";
-
-    private Connection connection;
     private MessageQueue<Measurement> queue;
+    private DatabaseWriter databaseWriter;
     private Validator validator;
+    private Map<Integer, List<byte[]>> output;
 
     /**
      * Initializes the QueueHandler with the given Queue
      *
      * @param queue
      */
-    public QueueHandler(MessageQueue<Measurement> queue) {
+    public QueueHandler(MessageQueue<Measurement> queue, DatabaseWriter writer) {
         this.queue = queue;
         this.validator = new Validator();
-        try {
-            connection = DriverManager.getConnection(url, user, pass);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+        this.output = new HashMap<>();
+        this.databaseWriter = writer;
     }
 
     @Override
     public void run() {
         while (true) {
-            // TODO: Spinlockish gedrag
-            // wasting CPU
             if (queue.size() >= 8000) {
-
-                Statement ldstmt = null;
-                String statementText = "LOAD DATA LOCAL INFILE 'file.txt'" +
-                        "INTO TABLE measurements " +
-                        "FIELDS TERMINATED BY \',\'" +
-                        "(stn, date, time, temp, dewp, stp, slp, visib, wdsp, prcp, sndp, frshtt, cldc, wnddir);";
-                try {
-                    ldstmt = (com.mysql.jdbc.Statement) connection.createStatement();
-
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
                 int size = queue.size();
                 StringBuilder builder = new StringBuilder();
                 for (int i = 0; i < size; i++) {
@@ -99,16 +78,20 @@ public class QueueHandler implements Runnable {
                     builder.append(',');
 
                     builder.append(m.getWnddir());
-                    builder.append(',');
                     builder.append('\n');
+
+                    List<byte[]> list = output.get(m.getStn()) == null ? new ArrayList<byte[]>() : output.get(m.getStn());
+                    list.add(builder.toString().getBytes());
+                    output.put(m.getStn(), list);
+                    builder.setLength(0);
                 }
-                InputStream is = IOUtils.toInputStream(builder.toString());
-                ldstmt.setLocalInfileInputStream(is);
-                try {
-                    ldstmt.execute(statementText);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+                databaseWriter.writeMap("measurements", output);
+                output.clear();
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
 
