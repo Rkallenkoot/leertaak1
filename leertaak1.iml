@@ -19,5 +19,14 @@
     </orderEntry>
     <orderEntry type="library" name="mysql:mysql-connector-java:5.1.36" level="project" />
     <orderEntry type="library" name="commons-io-2.4" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/csvjdbc-1.0-27.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
