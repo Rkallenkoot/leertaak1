@@ -89,6 +89,7 @@ public class DatabaseWriter {
                 for (byte[] bitjes : entry.getValue()) {
                     mbf.put(bitjes);
                 }
+                raf.close();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
