@@ -70,7 +70,6 @@ public class DatabaseWriter {
                 e.printStackTrace();
             }
 
-            Path outputFilePath = Paths.get(directory + "/" + tableName + "/" + entry.getKey() + "/" + date);
             final File file = new File(directory + "/" + tableName + "/" + entry.getKey() + "/" + date);
             // calculate the appendSize
             long appendSize = 0;
