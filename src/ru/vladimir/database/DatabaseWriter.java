@@ -1,6 +1,9 @@
 package ru.vladimir.database;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
@@ -47,30 +50,30 @@ public class DatabaseWriter {
         // check of directory van stationnummer bestaat, pak offset[1] ( date ) en check of die file bestaat
 
         for (Map.Entry<Integer, List<byte[]>> entry : outputMap.entrySet()) {
-            Path path = Paths.get(directory + "/" + tableName + "/" + entry.getKey());
-            if (!Files.exists(path)) {
-                // als die niet bestaat moeten we die folder aanmaken
-                try {
-                    Files.createDirectory(path);
-                } catch (IOException e) {
-                    System.out.println("Unable to create Directory: " + entry.getKey());
-                }
-            }
+//            Path path = Paths.get(directory + "/" + tableName);
+//            if (!Files.exists(path)) {
+//                // als die niet bestaat moeten we die folder aanmaken
+//                try {
+//                    Files.createDirectory(path);
+//                } catch (IOException e) {
+//                    System.out.println("Unable to create Directory: " + entry.getKey());
+//                }
+//            }
             // haal datum op
-            BufferedReader br = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(entry.getValue().get(0))));
-            String line = "";
-            String date = null;
-            try {
-                while ((line = br.readLine()) != null) {
-                    String[] values = line.split(",");
-                    date = values[1];
-                }
-                br.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            BufferedReader br = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(entry.getValue().get(0))));
+//            String line = "";
+//            String date = null;
+//            try {
+//                while ((line = br.readLine()) != null) {
+//                    String[] values = line.split(",");
+//                    date = values[1];
+//                }
+//                br.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
 
-            final File file = new File(directory + "/" + tableName + "/" + entry.getKey() + "/" + date);
+            final File file = new File(directory + "/" + tableName + "/measurements_" + entry.getKey() + ".csv");
             // calculate the appendSize
             long appendSize = 0;
             for (byte[] arr : entry.getValue()) {
