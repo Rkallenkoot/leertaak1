@@ -1,59 +1,74 @@
 package ru.vladimir.client;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.Properties;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import ru.vladimir.model.Measurement;
+
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class DatabaseReader {
 
-    public static void main(String[] args) {
-        DatabaseReader.doQuery();
+
+    private String dbDirectory;
+    private String tableName;
+
+    public DatabaseReader(String dbDirectory, String tableName) {
+        this.dbDirectory = dbDirectory;
+        this.tableName = tableName;
     }
 
-    public static void doQuery() {
+    /**
+     * @param stn Stationnumber
+     * @returns String json output of measurements
+     */
+    public String getStation(int stn) {
+        String jsonOutput = "";
+        Path stnDir = Paths.get(String.format("%s/%s/%s", dbDirectory, tableName, stn));
+        // Check of we data hebben van betreffende stn
+        if (!Files.exists(stnDir)) {
+            // TODO: MAAK HIER EXCEPTION VOOR
+            return jsonOutput;
+        }
+
+        //2015-10-15 dateformat
+        SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd");
+        Date date = new Date();
+        String dateFileDir = String.format("%s/%s.csv", stnDir, sdf.format(date));
+        Path dateFile = Paths.get(dateFileDir);
+        if (!Files.exists(dateFile)) {
+            // TODO: THROW EXCEPTION
+            return jsonOutput;
+        }
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         try {
-            // Load the driver.
-            Class.forName("org.relique.jdbc.csv.CsvDriver");
-            Properties props = new Properties();
-            props.put("fileExtension", ".csv");
-            props.put("indexedFiles", "true");
-            props.put("fileTailPattern", "_(\\d+)");
-////            props.put("fileTailParts", "station");
-
-            props.put("suppressHeaders", "true");
-
-            // 15e column added omdat die kut library zeikt over 15 gevonden met maar 14 column headers
-            // KUT library
-            props.put("headerline", "stn,date,time,temp,dewp,stp,slp,visib,wdsp,prcp,sndp,frshht,cldc,wnddir,stationIndex");
-            props.put("columnsTypes", "Int,Date,Time,float,float,float,float,float,float,float,float,float,byte,short,String");
-            Connection conn = DriverManager.getConnection("jdbc:relique:csv:db/measurements", props);
-            Statement stmt = conn.createStatement();
-            File f = new File("./db/measurements");
-            String[] dirArray = f.list(new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                    return name.matches("[0-9]+");
-                }
-            });
-            String dirString = String.join(",", dirArray);
-            String sql = "SELECT * FROM measurements"; //+ dirString;
-
-            ResultSet results = stmt.executeQuery(sql);
-            while (results.next()) {
-                System.out.println(results.getInt(1));
-                System.out.println(results.getString(2));
-                System.out.println(results.getString(15));
+            Reader in = new FileReader(dateFileDir);
+            CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader("stn", "date", "time", "temp", "dewp", "stp", "slp", "visib", "wdsp", "prcp", "sndp", "frshtt", "cldc", "wnddir");
+            CSVParser csvFileParser = new CSVParser(in, csvFormat);
+            List csvRecords = csvFileParser.getRecords();
+            List<Measurement> measurements = new ArrayList<>();
+            for (int i = 0; i < csvRecords.size(); i++) {
+                CSVRecord rec = (CSVRecord) csvRecords.get(i);
+                Measurement m = new Measurement(rec);
+                measurements.add(m);
             }
-            conn.close();
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+            jsonOutput = gson.toJson(measurements);
+        } catch (IOException e) {
             e.printStackTrace();
         }
+        return jsonOutput;
     }
 }
 

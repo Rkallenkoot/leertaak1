@@ -1,5 +1,6 @@
 package ru.vladimir.model;
 
+import org.apache.commons.csv.CSVRecord;
 import org.jdom2.Element;
 
 import java.sql.Date;
@@ -24,97 +25,44 @@ public class Measurement {
     private float cldc;
     private short wnddir;
 
-    public Measurement(Element el) {
-        setStn(Integer.parseInt(el.getChildText("STN")));
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
-            setDate(Date.valueOf(el.getChildText("DATE")));
-            long ms = sdf.parse(el.getChildText("TIME")).getTime();
-            setTime(new Time(ms));
-
-        } catch (ParseException e) {
-            System.out.println("Parse Exception in Measurement: " + e.getMessage());
-        }
-        String temp = el.getChildText("TEMP");
-        String dewp = el.getChildText("DEWP");
-        String stp = el.getChildText("SLP");
-        String slp = el.getChildText("SLP");
-        String visib = el.getChildText("VISIB");
-        String wdsp = el.getChildText("WDSP");
-        String prcp = el.getChildText("PRCP");
-        String sndp = el.getChildText("SNDP");
-        String frshtt = el.getChildText("FRSHTT");
-        String cldc = el.getChildText("CLDC");
-        String wnddir = el.getChildText("WNDDIR");
-
-        if (!temp.equals("")) {
-            setTemp(Float.parseFloat(temp));
-        } else {
-            setTemp(Float.MAX_VALUE);
-        }
-
-        if (!dewp.equals("")) {
-            setDewp(Float.parseFloat(dewp));
-        } else {
-            setDewp(Float.MAX_VALUE);
-        }
-
-        if (!stp.equals("")) {
-            setStp(Float.parseFloat(stp));
-        } else {
-            setStp(Float.MAX_VALUE);
-        }
-
-        if (!slp.equals("")) {
-            setSlp(Float.parseFloat(slp));
-        } else {
-            setSlp(Float.MAX_VALUE);
-        }
-
-        if (!visib.equals("")) {
-            setVisib(Float.parseFloat(visib));
-        } else {
-            setVisib(Float.MAX_VALUE);
-        }
-
-        if (!wdsp.equals("")) {
-            setWdsp(Float.parseFloat(wdsp));
-        } else {
-            setWdsp(Float.MAX_VALUE);
-        }
-
-        if (!prcp.equals("")) {
-            setPrcp(Float.parseFloat(prcp));
-        } else {
-            setPrcp(Float.MAX_VALUE);
-        }
-
-        if (!sndp.equals("")) {
-            setSndp(Float.parseFloat(sndp));
-        } else {
-            setSndp(Float.MAX_VALUE);
-        }
-
-        if (!frshtt.equals("")) {
-            setFrshtt(Byte.valueOf(frshtt, 2));
-        } else {
-            setFrshtt(Byte.parseByte("0"));
-        }
-
-        if (!cldc.equals("")) {
-            setCldc(Float.parseFloat(cldc));
-
-        } else {
-            setCldc(Float.MAX_VALUE);
-        }
-
-        if (!wnddir.equals("")) {
-            setWnddir(Short.parseShort(wnddir));
-        } else {
-            setWnddir(Short.MAX_VALUE);
-        }
+    public Measurement() {
 
     }
+
+    public Measurement(Element el) {
+        setStn(el.getChildText("STN"));
+        setDate(el.getChildText("DATE"));
+        setTime(el.getChildText("TIME"));
+        setTemp(el.getChildText("TEMP"));
+        setDewp(el.getChildText("DEWP"));
+        setStp(el.getChildText("STP"));
+        setSlp(el.getChildText("SLP"));
+        setVisib(el.getChildText("VISIB"));
+        setWdsp(el.getChildText("WDSP"));
+        setPrcp(el.getChildText("PRCP"));
+        setSndp(el.getChildText("SNDP"));
+        setFrshtt(el.getChildText("FRSHTT"));
+        setCldc(el.getChildText("CLDC"));
+        setWnddir(el.getChildText("WNDDIR"));
+    }
+
+    public Measurement(CSVRecord record) {
+        setStn(record.get("stn"));
+        setDate(record.get("date"));
+        setTime(record.get("time"));
+        setTemp(record.get("temp"));
+        setDewp(record.get("dewp"));
+        setStp(record.get("stp"));
+        setSlp(record.get("slp"));
+        setVisib(record.get("visib"));
+        setWdsp(record.get("wdsp"));
+        setPrcp(record.get("prcp"));
+        setSndp(record.get("sndp"));
+        setFrshtt(Short.valueOf(record.get("frshtt")));
+        setCldc(record.get("cldc"));
+        setWnddir(record.get("wnddir"));
+    }
+
 
     public int getStn() {
         return stn;
@@ -122,6 +70,10 @@ public class Measurement {
 
     public void setStn(int stn) {
         this.stn = stn;
+    }
+
+    public void setStn(String stn) {
+        setStn(Integer.parseInt(stn));
     }
 
     public Date getDate() {
@@ -132,12 +84,28 @@ public class Measurement {
         this.date = date;
     }
 
+    public void setDate(String date) {
+        setDate(Date.valueOf(date));
+    }
+
     public Time getTime() {
         return time;
     }
 
     public void setTime(Time time) {
         this.time = time;
+    }
+
+    public void setTime(String time) {
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
+        long ms = 0;
+        try {
+            ms = sdf.parse(time).getTime();
+        } catch (ParseException e) {
+            // default to ms 0
+            System.out.println("Parse Exception in Measurement: " + e.getMessage());
+        }
+        setTime(new Time(ms));
     }
 
     public float getTemp() {
@@ -148,12 +116,28 @@ public class Measurement {
         this.temp = temp;
     }
 
+    public void setTemp(String temp) {
+        if (!temp.equals("")) {
+            setTemp(Float.parseFloat(temp));
+        } else {
+            setTemp(Float.MAX_VALUE);
+        }
+    }
+
     public float getDewp() {
         return dewp;
     }
 
     public void setDewp(float dewp) {
         this.dewp = dewp;
+    }
+
+    public void setDewp(String dewp) {
+        if (!dewp.equals("")) {
+            setDewp(Float.parseFloat(dewp));
+        } else {
+            setDewp(Float.MAX_VALUE);
+        }
     }
 
     public float getStp() {
@@ -164,12 +148,28 @@ public class Measurement {
         this.stp = stp;
     }
 
+    public void setStp(String stp) {
+        if (!stp.equals("")) {
+            setStp(Float.parseFloat(stp));
+        } else {
+            setStp(Float.MAX_VALUE);
+        }
+    }
+
     public float getSlp() {
         return slp;
     }
 
     public void setSlp(float slp) {
         this.slp = slp;
+    }
+
+    public void setSlp(String slp) {
+        if (!slp.equals("")) {
+            setSlp(Float.parseFloat(slp));
+        } else {
+            setSlp(Float.MAX_VALUE);
+        }
     }
 
     public float getVisib() {
@@ -180,12 +180,29 @@ public class Measurement {
         this.visib = visib;
     }
 
+    public void setVisib(String visib) {
+        if (!visib.equals("")) {
+            setVisib(Float.parseFloat(visib));
+        } else {
+            setVisib(Float.MAX_VALUE);
+        }
+
+    }
+
     public float getWdsp() {
         return wdsp;
     }
 
     public void setWdsp(float wdsp) {
         this.wdsp = wdsp;
+    }
+
+    public void setWdsp(String wdsp) {
+        if (!wdsp.equals("")) {
+            setWdsp(Float.parseFloat(wdsp));
+        } else {
+            setWdsp(Float.MAX_VALUE);
+        }
     }
 
     public float getPrcp() {
@@ -196,6 +213,14 @@ public class Measurement {
         this.prcp = prcp;
     }
 
+    public void setPrcp(String prcp) {
+        if (!prcp.equals("")) {
+            setPrcp(Float.parseFloat(prcp));
+        } else {
+            setPrcp(Float.MAX_VALUE);
+        }
+    }
+
     public float getSndp() {
         return sndp;
     }
@@ -204,8 +229,28 @@ public class Measurement {
         this.sndp = sndp;
     }
 
+    public void setSndp(String sndp) {
+        if (!sndp.equals("")) {
+            setSndp(Float.parseFloat(sndp));
+        } else {
+            setSndp(Float.MAX_VALUE);
+        }
+    }
+
     public byte getFrshtt() {
         return frshtt;
+    }
+
+    public void setFrshtt(String frshtt) {
+        if (!frshtt.equals("")) {
+            setFrshtt(Byte.valueOf(frshtt, 2));
+        } else {
+            setFrshtt(Byte.parseByte("0"));
+        }
+    }
+
+    public void setFrshtt(short frshtt) {
+        this.frshtt = (byte) frshtt;
     }
 
     public void setFrshtt(byte frshtt) {
@@ -220,12 +265,29 @@ public class Measurement {
         this.cldc = cldc;
     }
 
+    public void setCldc(String cldc) {
+        if (!cldc.equals("")) {
+            setCldc(Float.parseFloat(cldc));
+
+        } else {
+            setCldc(Float.MAX_VALUE);
+        }
+    }
+
     public short getWnddir() {
         return wnddir;
     }
 
     public void setWnddir(short wnddir) {
         this.wnddir = wnddir;
+    }
+
+    public void setWnddir(String wnddir) {
+        if (!wnddir.equals("")) {
+            setWnddir(Short.parseShort(wnddir));
+        } else {
+            setWnddir(Short.MAX_VALUE);
+        }
     }
 
 }
