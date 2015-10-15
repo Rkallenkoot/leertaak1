@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement />
+  <nodes>
+    <node x="445.3127192982456" y="0.0">ru.vladimir.util.Channel</node>
+    <node x="259.75" y="0.0">ru.vladimir.model.Measurement</node>
+    <node x="268.25" y="168.0">ru.vladimir.server.QueueHandler</node>
+    <node x="153.0" y="89.0">ru.vladimir.database.DatabaseWriter</node>
+    <node x="503.5254385964912" y="168.0">ru.vladimir.worker.Worker</node>
+    <node x="409.0" y="89.0">ru.vladimir.worker.MessageQueue</node>
+    <node x="16.5" y="168.0">ru.vladimir.ClientMain</node>
+    <node x="301.0" y="89.0">ru.vladimir.validation.Validator</node>
+    <node x="285.7149122807018" y="267.0">ru.vladimir.server.Server</node>
+    <node x="0.0" y="89.0">ru.vladimir.client.DatabaseReader</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="ru.vladimir.server.Server" target="ru.vladimir.worker.Worker">
+      <point x="30.625" y="-14.5" />
+      <point x="351.3399122807018" y="247.0" />
+      <point x="541.5254385964912" y="247.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="ru.vladimir.server.Server" target="ru.vladimir.database.DatabaseWriter">
+      <point x="-13.125" y="-14.5" />
+      <point x="307.5899122807018" y="227.0" />
+      <point x="201.39780701754387" y="227.0" />
+      <point x="201.39780701754387" y="143.0" />
+      <point x="216.5" y="143.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="ru.vladimir.worker.MessageQueue" target="ru.vladimir.util.Channel">
+      <point x="0.0" y="-14.5" />
+      <point x="472.0" y="69.0" />
+      <point x="486.8127192982456" y="69.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="ru.vladimir.server.Server" target="ru.vladimir.server.QueueHandler">
+      <point x="-4.375" y="-14.5" />
+      <point x="316.3399122807018" y="217.0" />
+      <point x="298.5" y="217.0" />
+      <point x="-30.25" y="14.5" />
+    </edge>
+    <edge source="ru.vladimir.client.DatabaseReader" target="ru.vladimir.model.Measurement">
+      <point x="0.0" y="-14.5" />
+      <point x="66.0" y="49.0" />
+      <point x="269.41666666666663" y="49.0" />
+      <point x="-48.33333333333337" y="14.5" />
+    </edge>
+    <edge source="ru.vladimir.worker.Worker" target="ru.vladimir.model.Measurement">
+      <point x="0.0" y="-14.5" />
+      <point x="541.5254385964912" y="143.0" />
+      <point x="548.0416666666666" y="143.0" />
+      <point x="548.0416666666666" y="59.0" />
+      <point x="346.75" y="59.0" />
+      <point x="29.0" y="14.5" />
+    </edge>
+    <edge source="ru.vladimir.server.QueueHandler" target="ru.vladimir.validation.Validator">
+      <point x="0.0" y="-14.5" />
+      <point x="328.75" y="143.0" />
+      <point x="323.0" y="143.0" />
+      <point x="-22.0" y="14.5" />
+    </edge>
+    <edge source="ru.vladimir.ClientMain" target="ru.vladimir.client.DatabaseReader">
+      <point x="0.0" y="-14.5" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="ru.vladimir.validation.Validator" target="ru.vladimir.model.Measurement">
+      <point x="0.0" y="-14.5" />
+      <point x="345.0" y="69.0" />
+      <point x="327.41666666666663" y="69.0" />
+      <point x="9.666666666666629" y="14.5" />
+    </edge>
+    <edge source="ru.vladimir.server.Server" target="ru.vladimir.model.Measurement">
+      <point x="-30.625" y="-14.5" />
+      <point x="290.0899122807018" y="247.0" />
+      <point x="142.5" y="247.0" />
+      <point x="142.5" y="59.0" />
+      <point x="288.75" y="59.0" />
+      <point x="-29.0" y="14.5" />
+    </edge>
+    <edge source="ru.vladimir.server.QueueHandler" target="ru.vladimir.worker.MessageQueue">
+      <point x="48.39999999999998" y="-14.5" />
+      <point x="377.15" y="143.0" />
+      <point x="424.75" y="143.0" />
+      <point x="-47.25" y="14.5" />
+    </edge>
+    <edge source="ru.vladimir.server.QueueHandler" target="ru.vladimir.database.DatabaseWriter">
+      <point x="-48.39999999999998" y="-14.5" />
+      <point x="280.35" y="143.0" />
+      <point x="258.83333333333337" y="143.0" />
+      <point x="42.33333333333337" y="14.5" />
+    </edge>
+    <edge source="ru.vladimir.worker.Worker" target="ru.vladimir.worker.MessageQueue">
+      <point x="-25.33333333333337" y="-14.5" />
+      <point x="516.1921052631578" y="143.0" />
+      <point x="519.25" y="143.0" />
+      <point x="47.25" y="14.5" />
+    </edge>
+    <edge source="ru.vladimir.server.Server" target="ru.vladimir.worker.MessageQueue">
+      <point x="21.875" y="-14.5" />
+      <point x="342.5899122807018" y="237.0" />
+      <point x="476.375" y="237.0" />
+      <point x="476.375" y="143.0" />
+      <point x="487.75" y="143.0" />
+      <point x="15.75" y="14.5" />
+    </edge>
+    <edge source="ru.vladimir.server.QueueHandler" target="ru.vladimir.model.Measurement">
+      <point x="-24.200000000000045" y="-14.5" />
+      <point x="304.54999999999995" y="143.0" />
+      <point x="290.5" y="143.0" />
+      <point x="290.5" y="69.0" />
+      <point x="308.08333333333337" y="69.0" />
+      <point x="-9.666666666666629" y="14.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="346.0" y="120.0" />
+  <SelectedNodes />
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
